@@ -9,8 +9,8 @@ public class LightingManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeOfDay += Time.deltaTime;
-        timeOfDay %= 24;
+        //timeOfDay += Time.deltaTime;
+        //timeOfDay %= 24;
         UpdateLighting(timeOfDay / 24f);
     }
 
