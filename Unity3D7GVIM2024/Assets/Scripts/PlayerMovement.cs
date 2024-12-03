@@ -18,6 +18,13 @@ public class PlayerMovement : MonoBehaviour
     // Character controller
     private CharacterController characterController;
     
+    private Transform cameraTransform;
+
+    [SerializeField] private GameObject playerModel;
+    private Animator playerAnim;
+
+    [SerializeField] private float rotationSpeed = 5f;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +33,9 @@ public class PlayerMovement : MonoBehaviour
         
         //rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
+        cameraTransform = Camera.main.transform;
+        
+        playerAnim = playerModel.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -33,8 +43,20 @@ public class PlayerMovement : MonoBehaviour
     {
         inputDirection = movementAction.ReadValue<Vector2>();
         moveDirection = new Vector3(inputDirection.x, 0, inputDirection.y);
+        moveDirection = cameraTransform.forward * moveDirection.z +
+                        cameraTransform.right * moveDirection.x;
+        moveDirection.y = 0f;
 
+        if (moveDirection.magnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            playerModel.transform.rotation = Quaternion.Lerp(
+                playerModel.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        
         MovePlayerCC();
+        
+        playerAnim.SetFloat("Speed", moveDirection.sqrMagnitude);
     }
 
     private void MovePlayerRB()
